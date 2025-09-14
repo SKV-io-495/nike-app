@@ -29,9 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ className = '' }) => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <a href="/" className="flex items-center">
-              <div className="w-8 h-8 bg-black rounded-sm flex items-center justify-center">
-                <span className="text-white font-bold text-lg">✓</span>
-              </div>
+              <Image src="/logo.svg" alt="Nike Logo" width={40} height={40} className="filter invert" />
             </a>
           </div>
 
