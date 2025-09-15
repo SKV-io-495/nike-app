@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import { products } from './schema';
 
 dotenv.config({
-  path: '.env',
+  path: '.env.local',
 });
 
 const sql = neon(process.env.DATABASE_URL!);

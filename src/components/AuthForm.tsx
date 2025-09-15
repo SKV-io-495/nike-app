@@ -39,7 +39,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
             <SocialProviders />
             <div className="flex items-center">
               <div className="flex-grow border-t border-gray-300"></div>
-              <span className="mx-4 text-gray-500 text-sm">Or sign up with</span>
+              <span className="mx-4 text-gray-500 text-sm">
+                Or sign up with
+              </span>
               <div className="flex-grow border-t border-gray-300"></div>
             </div>
           </div>
@@ -61,7 +63,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 placeholder="Enter your full name"
               />
             </div>
-            
+
             <div>
               <label
                 htmlFor="email"
@@ -79,7 +81,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 placeholder="johndoe@gmail.com"
               />
             </div>
-            
+
             <div className="relative">
               <label
                 htmlFor="password"
@@ -104,7 +106,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-            
+
             <button
               type="submit"
               className="w-full py-3 px-4 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition-colors mt-6"
@@ -115,16 +117,22 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
           <div className="text-center text-xs text-gray-500 mt-4">
             By signing up, you agree to our{" "}
-            <Link href="#" className="underline">Terms of Service</Link>
-            {" "}and{" "}
-            <Link href="#" className="underline">Privacy Policy</Link>
+            <Link href="#" className="underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="#" className="underline">
+              Privacy Policy
+            </Link>
           </div>
         </>
       ) : (
         // Orion Sign In Design
         <>
           <div className="text-right mb-4">
-            <span className="text-gray-600 text-sm">Don't have an account? </span>
+            <span className="text-gray-600 text-sm">
+              Don't have an account?{" "}
+            </span>
             <Link href="/sign-up" className="text-black font-medium underline">
               Sign Up
             </Link>
@@ -143,7 +151,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
             <SocialProviders />
             <div className="flex items-center">
               <div className="flex-grow border-t border-gray-300"></div>
-              <span className="mx-4 text-gray-500 text-sm">Or sign in with</span>
+              <span className="mx-4 text-gray-500 text-sm">
+                Or sign in with
+              </span>
               <div className="flex-grow border-t border-gray-300"></div>
             </div>
           </div>
@@ -166,7 +176,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 placeholder="johndoe@gmail.com"
               />
             </div>
-            
+
             <div className="relative">
               <label
                 htmlFor="password"
@@ -191,7 +201,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-            
+
             <button
               type="submit"
               className="w-full py-3 px-4 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors mt-6"
@@ -200,7 +210,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
             </button>
 
             <div className="text-center mt-4">
-              <Link href="#" className="text-black underline text-sm font-medium">
+              <Link
+                href="#"
+                className="text-black underline text-sm font-medium"
+              >
                 Forgot password?
               </Link>
             </div>
@@ -209,8 +222,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
           <div className="text-center text-xs text-gray-500 mt-8 flex justify-between">
             <span>© 2024 Orion</span>
             <div className="space-x-4">
-              <Link href="#" className="hover:text-gray-700">Privacy Policy</Link>
-              <Link href="#" className="hover:text-gray-700">Support</Link>
+              <Link href="#" className="hover:text-gray-700">
+                Privacy Policy
+              </Link>
+              <Link href="#" className="hover:text-gray-700">
+                Support
+              </Link>
             </div>
           </div>
         </>

@@ -1,10 +1,13 @@
 "use client";
 
+import { signIn } from "next-auth/react";
+
 export default function SocialProviders() {
   return (
     <div className="space-y-3">
       <button
         type="button"
+        onClick={() => signIn("google")}
         className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-medium"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -27,9 +30,10 @@ export default function SocialProviders() {
         </svg>
         Continue with Google
       </button>
-      
+
       <button
         type="button"
+        onClick={() => signIn("apple")}
         className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors font-medium"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
