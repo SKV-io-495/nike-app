@@ -12,8 +12,10 @@
     "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.10.0",
     "@lucia-auth/adapter-drizzle": "^1.1.0",
     "@neondatabase/serverless": "^1.0.1",
+    "arctic": "^3.7.0",
     "drizzle-orm": "^0.44.5",
     "lucia": "^3.2.2",
     "lucide-react": "^0.544.0",

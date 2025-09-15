@@ -6,7 +6,7 @@ import { guests, users, accounts } from "@/lib/db/schema";
 import { v4 as uuidv4 } from "uuid";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { lucia } from "@/lib/auth";
+import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "@/lib/auth";
 import { Argon2id } from "oslo/password";
 import { redirect } from "next/navigation";
 
@@ -32,14 +32,12 @@ export async function signUp(values: z.infer<typeof signupSchema>) {
       password: hashedPassword,
     });
 
-    const session = await lucia.createSession(userId, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    const cookieStore = await cookies();
-    cookieStore.set(
-      sessionCookie.name,
-      sessionCookie.value,
-      sessionCookie.attributes
-    );
+    await nextAuthSignIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+    });
+
     return {
       success: true,
       data: { userId },
@@ -53,45 +51,12 @@ export async function signUp(values: z.infer<typeof signupSchema>) {
 
 export async function signIn(values: z.infer<typeof signupSchema>) {
   try {
-    const existingUser = await db.query.users.findFirst({
-      where: (table) => eq(table.email, values.email),
+    await nextAuthSignIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
     });
 
-    if (!existingUser) {
-      return {
-        error: "User not found",
-      };
-    }
-
-    const existingAccount = await db.query.accounts.findFirst({
-      where: (table) => eq(table.userId, existingUser.id),
-    });
-
-    if (!existingAccount || !existingAccount.password) {
-      return {
-        error: "Invalid credentials",
-      };
-    }
-
-    const isValidPassword = await new Argon2id().verify(
-      existingAccount.password,
-      values.password
-    );
-
-    if (!isValidPassword) {
-      return {
-        error: "Invalid credentials",
-      };
-    }
-
-    const session = await lucia.createSession(existingUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    const cookieStore = await cookies();
-    cookieStore.set(
-      sessionCookie.name,
-      sessionCookie.value,
-      sessionCookie.attributes
-    );
     return {
       success: true,
     };
@@ -103,14 +68,7 @@ export async function signIn(values: z.infer<typeof signupSchema>) {
 }
 
 export async function signOut() {
-  const sessionCookie = lucia.createBlankSessionCookie();
-  const cookieStore = await cookies();
-  cookieStore.set(
-    sessionCookie.name,
-    sessionCookie.value,
-    sessionCookie.attributes
-  );
-  return redirect("/sign-in");
+  await nextAuthSignOut({ redirectTo: "/sign-in" });
 }
 
 export async function createGuestSession() {
