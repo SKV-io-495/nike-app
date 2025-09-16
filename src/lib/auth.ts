@@ -2,22 +2,22 @@ import NextAuth from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db";
 import Google from "next-auth/providers/google";
-import Apple from "next-auth/providers/apple";
 import Credentials from "next-auth/providers/credentials";
-import { users, accounts } from "@/lib/db/schema";
+import * as schema from "@/lib/db/schema/index";
 import { eq } from "drizzle-orm";
 import { Argon2id } from "oslo/password";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: DrizzleAdapter(db),
+  adapter: DrizzleAdapter(db,{
+    usersTable: schema.users,
+    accountsTable: schema.accounts,
+    sessionsTable: schema.sessions,
+    verificationTokensTable: schema.verificationTokens,
+  }),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    Apple({
-      clientId: process.env.APPLE_CLIENT_ID!,
-      clientSecret: process.env.APPLE_CLIENT_SECRET!,
     }),
     Credentials({
       name: "Credentials",
@@ -43,7 +43,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           const existingAccount = await db.query.accounts.findFirst({
-            where: (table) => eq(table.userId, existingUser.id),
+            where: (table) =>
+              eq(table.userId, existingUser.id) &&
+              eq(table.provider, "credentials"),
           });
 
           if (!existingAccount || !existingAccount.password) {
@@ -71,6 +73,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "database",
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      return baseUrl;
+    },
     async session({ session, user }) {
       session.user.id = user.id;
       return session;

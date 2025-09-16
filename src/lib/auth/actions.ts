@@ -11,58 +11,78 @@ import { Argon2id } from "oslo/password";
 import { redirect } from "next/navigation";
 
 const signupSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
-export async function signUp(values: z.infer<typeof signupSchema>) {
-  const hashedPassword = await new Argon2id().hash(values.password);
+export async function signUp(formData: FormData) {
+  const rawData = Object.fromEntries(formData);
+  const parsedData = signupSchema.safeParse(rawData);
+
+  if (!parsedData.success) {
+    return {
+      error: parsedData.error.issues.map((e) => e.message).join(", "),
+    };
+  }
+
+  const { name, email, password } = parsedData.data;
+  const hashedPassword = await new Argon2id().hash(password);
   const userId = uuidv4();
 
   try {
     await db.insert(users).values({
       id: userId,
-      email: values.email,
+      name: name,
+      email: email,
     });
 
     await db.insert(accounts).values({
-      userId,
-      providerId: "credentials",
-      accountId: values.email,
+      userId: userId,
+      type: "credentials",
+      provider: "credentials",
+      providerAccountId: "credentials",
       password: hashedPassword,
     });
 
     await nextAuthSignIn("credentials", {
-      email: values.email,
-      password: values.password,
-      redirect: false,
+      email,
+      password,
     });
-
-    return {
-      success: true,
-      data: { userId },
-    };
   } catch (error: any) {
+    if (error.message?.includes("UNIQUE constraint failed")) {
+      return {
+        error: "User with this email already exists.",
+      };
+    }
     return {
-      error: error?.message,
+      error: "An unexpected error occurred. Please try again.",
     };
   }
 }
 
-export async function signIn(values: z.infer<typeof signupSchema>) {
+export async function signIn(formData: FormData) {
+  const rawData = Object.fromEntries(formData);
+  // We can reuse the signupSchema for validation, or a subset of it
+  const parsedData = signupSchema.pick({ email: true, password: true }).safeParse(rawData);
+
+  if (!parsedData.success) {
+    return {
+      error: "Invalid email or password.",
+    };
+  }
+
+  const { email, password } = parsedData.data;
+
   try {
     await nextAuthSignIn("credentials", {
-      email: values.email,
-      password: values.password,
-      redirect: false,
+      email,
+      password,
     });
-
-    return {
-      success: true,
-    };
   } catch (error: any) {
+    // NextAuth.js throws an error for failed sign-in attempts
     return {
-      error: error?.message,
+      error: "Invalid email or password.",
     };
   }
 }

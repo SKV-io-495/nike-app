@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import SocialProviders from "./SocialProviders";
 import { Eye, EyeOff } from "lucide-react";
+import { signIn, signUp } from "@/lib/auth/actions";
 
 interface AuthFormProps {
   mode: "signin" | "signup";
@@ -11,8 +12,18 @@ interface AuthFormProps {
 
 export default function AuthForm({ mode }: AuthFormProps) {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const isSignUp = mode === "signup";
+
+  const handleSubmit = async (formData: FormData) => {
+    setError(null);
+    const action = isSignUp ? signUp : signIn;
+    const result = await action(formData);
+    if (result?.error) {
+      setError(result.error);
+    }
+  };
 
   return (
     <div className="w-full max-w-md space-y-6">
@@ -46,17 +57,22 @@ export default function AuthForm({ mode }: AuthFormProps) {
             </div>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" action={handleSubmit}>
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span className="block sm:inline">{error}</span>
+              </div>
+            )}
             <div>
               <label
-                htmlFor="fullname"
+                htmlFor="name"
                 className="block text-sm font-medium text-black mb-2"
               >
                 Full Name
               </label>
               <input
-                id="fullname"
-                name="fullname"
+                id="name"
+                name="name"
                 type="text"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-500"
@@ -127,7 +143,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           </div>
         </>
       ) : (
-        // Orion Sign In Design
+        // Nike Sign In Design
         <>
           <div className="text-right mb-4">
             <span className="text-gray-600 text-sm">
@@ -140,7 +156,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-black mb-2">
-              Welcome back to Orion!
+              Welcome back to Nike!
             </h1>
             <p className="text-gray-600 text-sm">
               Please enter your details to sign in your account
@@ -158,7 +174,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
             </div>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" action={handleSubmit}>
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span className="block sm:inline">{error}</span>
+              </div>
+            )}
             <div>
               <label
                 htmlFor="email"
@@ -220,7 +241,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           </form>
 
           <div className="text-center text-xs text-gray-500 mt-8 flex justify-between">
-            <span>© 2024 Orion</span>
+            <span>© 2024 Nike</span>
             <div className="space-x-4">
               <Link href="#" className="hover:text-gray-700">
                 Privacy Policy
